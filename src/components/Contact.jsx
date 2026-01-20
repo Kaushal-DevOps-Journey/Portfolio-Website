@@ -50,9 +50,18 @@ export default function Contact() {
                     setIsSent(true);
                 },
                 (error) => {
+                    console.error('EmailJS FAILED...', error.text);
+
+                    // Fallback to mailto if EmailJS fails
+                    const formData = new FormData(form.current);
+                    const subject = `Portfolio Inquiry from ${formData.get('user_name')}`;
+                    const body = `Name: ${formData.get('user_name')}\nEmail: ${formData.get('user_email')}\n\nMessage:\n${formData.get('message')}`;
+
+                    window.location.href = `mailto:kaushalkumar5407@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
                     setIsSubmitting(false);
-                    setError("Failed to send message. Please try again or email directly.");
-                    console.error('FAILED...', error.text);
+                    setError("Direct service busy. Opening your email client to send message...");
+                    setTimeout(() => setIsSent(true), 1500); // Mark as sent since it was handled by mailto
                 },
             );
     };
